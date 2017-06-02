@@ -8,7 +8,7 @@
  *
  *     module "defaults" {
  *       source = "github.com/segmentio/stack/defaults"
- *       region = "us-east-1"
+ *       region = "eu-west-1"
  *       cidr   = "10.0.0.0/16"
  *     }
  *
