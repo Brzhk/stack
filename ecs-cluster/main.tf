@@ -18,7 +18,7 @@
  *        key_name             = "ssh-key"
  *        security_groups      = "1,2"
  *        iam_instance_profile = "id"
- *        region               = "us-west-2"
+ *        region               = "eu-west-1"
  *        availability_zones   = ["a", "b"]
  *        instance_type        = "t2.small"
  *      }

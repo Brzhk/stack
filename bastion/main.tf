@@ -11,7 +11,7 @@
  *
  *    module "bastion" {
  *      source            = "github.com/segmentio/stack/bastion"
- *      region            = "us-west-2"
+ *      region            = "eu-west-1"
  *      security_groups   = "sg-1,sg-2"
  *      vpc_id            = "vpc-12"
  *      key_name          = "ssh-key"
@@ -27,7 +27,7 @@ variable "instance_type" {
 }
 
 variable "region" {
-  description = "AWS Region, e.g us-west-2"
+  description = "AWS Region, e.g eu-west-1"
 }
 
 variable "security_groups" {
