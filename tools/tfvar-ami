@@ -12,7 +12,7 @@ usage() {
 }
 
 template=$1
-test $template || usage
+test ${template} || usage
 
 ami=$(grep ami- | cut -d: -f2 | sed 's/ //')
 printf "variable \"${template}_ami\" {\n  default = \"${ami}\"\n}"

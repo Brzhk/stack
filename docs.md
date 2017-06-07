@@ -40,7 +40,7 @@ Usage:
 | key_name | the name of the ssh key to use, e.g. "internal-key" | - | yes |
 | domain_name | the internal DNS name to use with services | `stack.local` | no |
 | domain_name_servers | the internal DNS servers, defaults to the internal route53 server of the VPC | `` | no |
-| region | the AWS region in which resources are created, you must set the availability_zones variable as well if you define this value to something other than the default | `us-west-2` | no |
+| region | the AWS region in which resources are created, you must set the availability_zones variable as well if you define this value to something other than the default | `not-eu-west-1` | no |
 | cidr | the CIDR block to provision for the VPC, if set to something other than the default, both internal_subnets and external_subnets have to be defined as well | `10.30.0.0/16` | no |
 | internal_subnets | a list of CIDRs for internal subnets in your VPC, must be set if the cidr variable is defined, needs to have as many elements as there are availability zones | `<list>` | no |
 | external_subnets | a list of CIDRs for external subnets in your VPC, must be set if the cidr variable is defined, needs to have as many elements as there are availability zones | `<list>` | no |
@@ -88,7 +88,7 @@ Usage:
 # bastion
 
 The bastion host acts as the "jump point" for the rest of the infrastructure.
-Since most of our instances aren't exposed to the external internet, the bastion acts as the gatekeeper for any direct SSH access.
+Since most of our instances are not exposed to the external internet, the bastion acts as the gatekeeper for any direct SSH access.
 The bastion is provisioned using the key name that you pass to the stack (and hopefully have stored somewhere).
 If you ever need to access an instance directly, you can do it by "jumping through" the bastion.
 
@@ -99,7 +99,7 @@ Usage:
 
     module "bastion" {
       source            = "github.com/segmentio/stack/bastion"
-      region            = "us-west-2"
+      region            = "eu-west-1"
       security_groups   = "sg-1,sg-2"
       vpc_id            = "vpc-12"
       key_name          = "ssh-key"
@@ -114,7 +114,7 @@ Usage:
 | Name | Description | Default | Required |
 |------|-------------|:-----:|:-----:|
 | instance_type | Instance type, see a list at: https://aws.amazon.com/ec2/instance-types/ | `t2.micro` | no |
-| region | AWS Region, e.g us-west-2 | - | yes |
+| region | AWS Region, e.g eu-west-1 | - | yes |
 | security_groups | a comma separated lists of security group IDs | - | yes |
 | vpc_id | VPC ID | - | yes |
 | key_name | The SSH key pair, key name | - | yes |
@@ -138,7 +138,7 @@ Usage:
 
     module "defaults" {
       source = "github.com/segmentio/stack/defaults"
-      region = "us-east-1"
+      region = ""
       cidr   = "10.0.0.0/16"
     }
 

@@ -2,7 +2,7 @@
 # Run as: docker run --rm -it --net=host \
 #    -v $PWD:$PWD -w $PWD \
 #    -v /tmp:/tmp -v ~/.aws:/root/.aws \
-#    -e AWS_DEFAULT_REGION=us-east-1 aws-stack make amis
+#    -e AWS_DEFAULT_REGION= aws-stack make amis
 
 FROM python:3.5-slim
 RUN pip3 install mypy-lang==0.4 flake8==2.5.4 pyyaml boto3
