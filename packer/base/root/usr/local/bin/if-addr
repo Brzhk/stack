@@ -9,7 +9,7 @@ usage() {
 }
 
 NETWORK_INTERFACE=$1
-test $NETWORK_INTERFACE || usage
+test ${NETWORK_INTERFACE} || usage
 
 ip addr | awk '
 /^[0-9]+:/ {
@@ -17,4 +17,4 @@ ip addr | awk '
 /^[[:space:]]*inet / {
   split($2, a, "/")
   print iface" "a[1]
-}' | grep $NETWORK_INTERFACE | cut -d' ' -f2
+}' | grep ${NETWORK_INTERFACE} | cut -d' ' -f2
