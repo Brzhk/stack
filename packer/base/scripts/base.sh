@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+export DEBIAN_FRONTEND=noninteractive
+echo $(dpkg -l "*$(uname -r)*" | grep image | awk '{print $2}') hold
 systemctl disable apt-daily.service
 systemctl disable apt-daily.timer
 
@@ -38,5 +40,3 @@ apt-get install -y \
         dhcpdump
 
 pip install awscli
-
-apt-get dist-upgrade -y
