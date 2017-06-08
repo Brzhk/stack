@@ -11,11 +11,11 @@ RUN apt-get update \
   && apt-get clean
 
 COPY tools /usr/local/bin
-RUN curl -sL "https://releases.hashicorp.com/terraform/0.7.2/terraform_0.7.2_linux_amd64.zip"> terraform.zip \
+RUN curl -sL "https://releases.hashicorp.com/terraform/0.9.7/terraform_0.9.7_linux_amd64.zip"> terraform.zip \
   && unzip terraform.zip \
   && mv terraform /usr/local/bin
 
-RUN curl -sL "https://releases.hashicorp.com/packer/0.10.1/packer_0.10.1_linux_amd64.zip" > packer.zip \
+RUN curl -sL "https://releases.hashicorp.com/packer/1.0.0/packer_1.0.0_linux_amd64.zip" > packer.zip \
   && unzip packer.zip \
   && mv packer /usr/local/bin
 

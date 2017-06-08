@@ -17,7 +17,7 @@ install: install-third-party-tools install-python-dependencies install-tools
 
 ifeq (${platform},Darwin)
 install-third-party-tools:
-	brew install packer terraform python3
+	echo "done"
 else
 install-third-party-tools:
 	@echo "${platform} is a platform we have no presets for, you'll have to install the third party dependencies manually (packer, terraform, python3)"
