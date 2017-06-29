@@ -22,8 +22,6 @@ resource "aws_nat_gateway" "main" {
   count = "${length(var.internal_subnets)}"
   allocation_id = "${element(var.internal_nat_eip_ids, count.index)}"
   subnet_id = "${element(var.external_subnet_ids, count.index)}"
-  depends_on = [
-    "aws_internet_gateway.main"]
 }
 
 resource "aws_route" "internal" {
