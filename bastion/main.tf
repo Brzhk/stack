@@ -42,6 +42,11 @@ variable "key_name" {
   description = "The SSH key pair, key name"
 }
 
+variable "private_key_local_path" {
+  description = "The local path to the SSH private key used for the 'key_name' EC2 key pair."
+  default = ""
+}
+
 variable "subnet_id" {
   description = "A external subnet id"
 }
@@ -70,6 +75,11 @@ resource "aws_instance" "bastion" {
   tags {
     Name        = "bastion"
     Environment = "${var.environment}"
+  }
+
+  provisioner "file" {
+    source = "${coalesce(var.private_key_local_path, format("~/.ssh/%s", key_name))}"
+    destination = "/home/ubuntu/.ssh/key.pem"
   }
 }
 
