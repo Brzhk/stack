@@ -27,7 +27,7 @@ ExecStart=/usr/bin/docker run \
     --publish=127.0.0.1:51679:51679 \
     --env-file=/etc/ecs/ecs.config \
     --env=ECS_CLUSTER=${SERVER_GROUP} \
-    amazon/amazon-ecs-agent:v1.14.1
+    amazon/amazon-ecs-agent:v1.14.3
 ExecStop=-/usr/bin/docker stop ecs-agent
 
 [Install]
