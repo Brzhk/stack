@@ -44,7 +44,7 @@ variable "key_name" {
 
 variable "private_key_local_path" {
   description = "The local path to the SSH private key used for the 'key_name' EC2 key pair."
-  default = ""
+  default     = ""
 }
 
 variable "subnet_id" {
@@ -78,8 +78,13 @@ resource "aws_instance" "bastion" {
   }
 
   provisioner "file" {
-    source = "${coalesce(var.private_key_local_path, format("~/.ssh/%s", var.key_name))}"
+    source      = "${coalesce(var.private_key_local_path, format("~/.ssh/%s", var.key_name))}"
     destination = "/home/ubuntu/.ssh/key.pem"
+    connection {
+      type                = "ssh"
+      bastion_user        = "ubuntu"
+      bastion_private_key = "${file(coalesce(var.private_key_local_path, format("~/.ssh/%s", var.key_name)))}"
+    }
   }
 }
 
