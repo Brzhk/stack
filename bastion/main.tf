@@ -78,7 +78,7 @@ resource "aws_instance" "bastion" {
   }
 
   provisioner "file" {
-    source = "${coalesce(var.private_key_local_path, format("~/.ssh/%s", key_name))}"
+    source = "${coalesce(var.private_key_local_path, format("~/.ssh/%s", var.key_name))}"
     destination = "/home/ubuntu/.ssh/key.pem"
   }
 }
