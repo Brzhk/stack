@@ -155,7 +155,7 @@ resource "aws_ecs_service" "main" {
 }
 
 module "task" {
-  source = "../task"
+  source        = "../task"
 
   name          = "${coalesce(var.name, replace(var.image, "/", "-"))}"
   image         = "${var.image}"
@@ -165,7 +165,7 @@ module "task" {
   memory        = "${var.memory}"
   cpu           = "${var.cpu}"
 
-  ports = <<EOF
+  ports         = <<EOF
   [
     {
       "containerPort": ${var.container_port},
@@ -176,7 +176,7 @@ EOF
 }
 
 module "elb" {
-  source = "./elb"
+  source             = "./elb"
 
   name               = "${module.task.name}"
   port               = "${var.port}"

@@ -135,15 +135,15 @@ resource "aws_db_subnet_group" "main" {
 }
 
 resource "aws_db_instance" "main" {
-  identifier = "${var.name}"
+  identifier                = "${var.name}"
 
   # Database
-  engine         = "${var.engine}"
-  engine_version = "${var.engine_version}"
-  username       = "${coalesce(var.username, var.name)}"
-  password       = "${var.password}"
-  multi_az       = "${var.multi_az}"
-  name           = "${coalesce(var.database, var.name)}"
+  engine                    = "${var.engine}"
+  engine_version            = "${var.engine_version}"
+  username                  = "${coalesce(var.username, var.name)}"
+  password                  = "${var.password}"
+  multi_az                  = "${var.multi_az}"
+  name                      = "${coalesce(var.database, var.name)}"
 
   # Backups / maintenance
   backup_retention_period   = "${var.backup_retention_period}"
@@ -153,14 +153,14 @@ resource "aws_db_instance" "main" {
   final_snapshot_identifier = "${var.name}-finalsnapshot"
 
   # Hardware
-  instance_class    = "${var.instance_class}"
-  storage_type      = "${var.storage_type}"
-  allocated_storage = "${var.allocated_storage}"
+  instance_class            = "${var.instance_class}"
+  storage_type              = "${var.storage_type}"
+  allocated_storage         = "${var.allocated_storage}"
 
   # Network / security
-  db_subnet_group_name   = "${aws_db_subnet_group.main.id}"
-  vpc_security_group_ids = ["${aws_security_group.main.id}"]
-  publicly_accessible    = "${var.publicly_accessible}"
+  db_subnet_group_name      = "${aws_db_subnet_group.main.id}"
+  vpc_security_group_ids    = ["${aws_security_group.main.id}"]
+  publicly_accessible       = "${var.publicly_accessible}"
 }
 
 output "addr" {

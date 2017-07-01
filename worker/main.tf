@@ -96,7 +96,7 @@ resource "aws_ecs_service" "main" {
 }
 
 module "task" {
-  source = "../task"
+  source        = "../task"
 
   name          = "${coalesce(var.name, var.image)}"
   image         = "${var.image}"

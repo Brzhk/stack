@@ -35,12 +35,14 @@ variable "cpu" {
 variable "env_vars" {
   description = "The raw json of the task env vars"
   default     = "[]"
-} # [{ "name": name, "value": value }]
+}
+# [{ "name": name, "value": value }]
 
 variable "command" {
   description = "The raw json of the task command"
   default     = "[]"
-} # ["--key=foo","--port=bar"]
+}
+# ["--key=foo","--port=bar"]
 
 variable "entry_point" {
   description = "The docker container entry point"
@@ -79,8 +81,8 @@ variable "role" {
 # The ECS task definition.
 
 resource "aws_ecs_task_definition" "main" {
-  family        = "${var.name}"
-  task_role_arn = "${var.role}"
+  family                = "${var.name}"
+  task_role_arn         = "${var.role}"
 
   lifecycle {
     ignore_changes        = ["image"]

@@ -4,12 +4,12 @@ variable "cidr" {
 
 variable "external_subnets" {
   description = "List of external subnets"
-  type = "list"
+  type        = "list"
 }
 
 variable "internal_subnets" {
   description = "List of internal subnets"
-  type = "list"
+  type        = "list"
 }
 
 variable "environment" {
@@ -18,12 +18,12 @@ variable "environment" {
 
 variable "availability_zones" {
   description = "List of availability zones"
-  type = "list"
+  type        = "list"
 }
 
 variable "name" {
   description = "Name tag, e.g stack"
-  default = "stack"
+  default     = "stack"
 }
 
 
@@ -31,12 +31,12 @@ variable "name" {
  * VPC
  */
 resource "aws_vpc" "main" {
-  cidr_block = "${var.cidr}"
-  enable_dns_support = true
+  cidr_block           = "${var.cidr}"
+  enable_dns_support   = true
   enable_dns_hostnames = true
 
   tags {
-    Name = "${var.name}"
+    Name        = "${var.name}"
     Environment = "${var.environment}"
   }
 }
@@ -49,14 +49,14 @@ resource "aws_internet_gateway" "main" {
   vpc_id = "${aws_vpc.main.id}"
 
   tags {
-    Name = "${var.name}"
+    Name        = "${var.name}"
     Environment = "${var.environment}"
   }
 }
 
 resource "aws_eip" "nat" {
   count = "${length(var.internal_subnets)}"
-  vpc = true
+  vpc   = true
 }
 
 
@@ -64,26 +64,26 @@ resource "aws_eip" "nat" {
  * Subnets.
  */
 resource "aws_subnet" "internal" {
-  vpc_id = "${aws_vpc.main.id}"
-  cidr_block = "${element(var.internal_subnets, count.index)}"
+  vpc_id            = "${aws_vpc.main.id}"
+  cidr_block        = "${element(var.internal_subnets, count.index)}"
   availability_zone = "${element(var.availability_zones, count.index)}"
-  count = "${length(var.internal_subnets)}"
+  count             = "${length(var.internal_subnets)}"
 
   tags {
-    Name = "${var.name}-${format("internal-%03d", count.index+1)}"
+    Name        = "${var.name}-${format("internal-%03d", count.index+1)}"
     Environment = "${var.environment}"
   }
 }
 
 resource "aws_subnet" "external" {
-  vpc_id = "${aws_vpc.main.id}"
-  cidr_block = "${element(var.external_subnets, count.index)}"
-  availability_zone = "${element(var.availability_zones, count.index)}"
-  count = "${length(var.external_subnets)}"
+  vpc_id                  = "${aws_vpc.main.id}"
+  cidr_block              = "${element(var.external_subnets, count.index)}"
+  availability_zone       = "${element(var.availability_zones, count.index)}"
+  count                   = "${length(var.external_subnets)}"
   map_public_ip_on_launch = true
 
   tags {
-    Name = "${var.name}-${format("external-%03d", count.index+1)}"
+    Name        = "${var.name}-${format("external-%03d", count.index+1)}"
     Environment = "${var.environment}"
   }
 }
@@ -96,23 +96,23 @@ resource "aws_route_table" "external" {
   vpc_id = "${aws_vpc.main.id}"
 
   tags {
-    Name = "${var.name}-external-001"
+    Name        = "${var.name}-external-001"
     Environment = "${var.environment}"
   }
 }
 
 resource "aws_route" "external" {
-  route_table_id = "${aws_route_table.external.id}"
+  route_table_id         = "${aws_route_table.external.id}"
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id = "${aws_internet_gateway.main.id}"
+  gateway_id             = "${aws_internet_gateway.main.id}"
 }
 
 resource "aws_route_table" "internal" {
-  count = "${length(var.internal_subnets)}"
+  count  = "${length(var.internal_subnets)}"
   vpc_id = "${aws_vpc.main.id}"
 
   tags {
-    Name = "${var.name}-${format("internal-%03d", count.index+1)}"
+    Name        = "${var.name}-${format("internal-%03d", count.index+1)}"
     Environment = "${var.environment}"
   }
 }
@@ -122,14 +122,14 @@ resource "aws_route_table" "internal" {
  * Route associations
  */
 resource "aws_route_table_association" "internal" {
-  count = "${length(var.internal_subnets)}"
-  subnet_id = "${element(aws_subnet.internal.*.id, count.index)}"
+  count          = "${length(var.internal_subnets)}"
+  subnet_id      = "${element(aws_subnet.internal.*.id, count.index)}"
   route_table_id = "${element(aws_route_table.internal.*.id, count.index)}"
 }
 
 resource "aws_route_table_association" "external" {
-  count = "${length(var.external_subnets)}"
-  subnet_id = "${element(aws_subnet.external.*.id, count.index)}"
+  count          = "${length(var.external_subnets)}"
+  subnet_id      = "${element(aws_subnet.external.*.id, count.index)}"
   route_table_id = "${aws_route_table.external.id}"
 }
 
@@ -144,14 +144,12 @@ output "id" {
 
 // A comma-separated list of subnet IDs.
 output "external_subnets" {
-  value = [
-    "${aws_subnet.external.*.id}"]
+  value = ["${aws_subnet.external.*.id}"]
 }
 
 // A list of subnet IDs.
 output "internal_subnets" {
-  value = [
-    "${aws_subnet.internal.*.id}"]
+  value = ["${aws_subnet.internal.*.id}"]
 }
 
 // The default VPC security group ID.
@@ -161,13 +159,12 @@ output "security_group" {
 
 // The list of availability zones of the VPC.
 output "availability_zones" {
-  value = [
-    "${aws_subnet.external.*.availability_zone}"]
+  value = ["${aws_subnet.external.*.availability_zone}"]
 }
 
 // The internal route table ID.
 output "internal_rtb_id" {
-  value = "${join(",", aws_route_table.internal.*.id)}"
+  value = ["${aws_route_table.internal.*.id}"]
 }
 
 // The external route table ID.
@@ -177,12 +174,10 @@ output "external_rtb_id" {
 
 // The list of EIPs associated with the internal subnets.
 output "internal_nat_ips" {
-  value = [
-    "${aws_eip.nat.*.public_ip}"]
+  value = ["${aws_eip.nat.*.public_ip}"]
 }
 
 // The list of EIPs associated with the internal subnets.
 output "internal_nat_eip_ids" {
-  value = [
-    "${aws_eip.nat.*.id}"]
+  value = ["${aws_eip.nat.*.id}"]
 }
