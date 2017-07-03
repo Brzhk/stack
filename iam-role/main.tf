@@ -63,7 +63,7 @@ resource "aws_iam_role_policy" "default_ecs_instance_role_policy" {
         {
             "Effect": "Allow",
             "Action": [
-                "autoscaling:*"
+                "autoscaling:*",
                 "ecr:BatchCheckLayerAvailability",
                 "ecr:BatchGetImage",
                 "ecr:GetAuthorizationToken",
@@ -74,7 +74,7 @@ resource "aws_iam_role_policy" "default_ecs_instance_role_policy" {
                 "ecs:DescribeContainerInstances",
                 "ecs:DiscoverPollEndpoint",
                 "ecs:ListClusters",
-                "ecs:ListContainerInstances"
+                "ecs:ListContainerInstances",
                 "ecs:Poll",
                 "ecs:RegisterContainerInstance",
                 "ecs:RegisterTaskDefinition",
@@ -82,7 +82,7 @@ resource "aws_iam_role_policy" "default_ecs_instance_role_policy" {
                 "ecs:StartTask",
                 "ecs:StartTelemetrySession",
                 "ecs:StopTask",
-                "ecs:Submit*",
+                "ecs:Submit*"
             ],
             "Resource": "*"
         },
@@ -91,8 +91,8 @@ resource "aws_iam_role_policy" "default_ecs_instance_role_policy" {
             "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
-                "logs:DescribeLogStreams"
-                "logs:PutLogEvents",
+                "logs:DescribeLogStreams",
+                "logs:PutLogEvents"
             ],
             "Resource": "arn:aws:logs:*:*:*"
         }
