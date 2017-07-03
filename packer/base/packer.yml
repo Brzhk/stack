@@ -1,7 +1,7 @@
 ---
 # https://www.packer.io/docs/builders/amazon-ebs.html
 ami:
-  source_ami: ami-af455dc9
+  source_ami: ami-6d48500b
   region: eu-west-1
   instance_type: c4.2xlarge
   ssh_username: ubuntu
