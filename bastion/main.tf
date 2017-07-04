@@ -83,6 +83,7 @@ resource "aws_instance" "bastion" {
     connection {
       type = "ssh"
       user = "ubuntu"
+      private_key = "${file(coalesce(var.private_key_local_path, format("~/.ssh/%s", var.key_name)))}"
     }
   }
 }
