@@ -68,21 +68,7 @@ resource "aws_iam_role_policy" "default_ecs_instance_role_policy" {
                 "ecr:BatchGetImage",
                 "ecr:GetAuthorizationToken",
                 "ecr:GetDownloadUrlForLayer",
-                "ecs:CreateCluster",
-                "ecs:DeregisterContainerInstance",
-                "ecs:DescribeClusters",
-                "ecs:DescribeContainerInstances",
-                "ecs:DiscoverPollEndpoint",
-                "ecs:ListClusters",
-                "ecs:ListContainerInstances",
-                "ecs:Poll",
-                "ecs:RegisterContainerInstance",
-                "ecs:RegisterTaskDefinition",
-                "ecs:RunTask",
-                "ecs:StartTask",
-                "ecs:StartTelemetrySession",
-                "ecs:StopTask",
-                "ecs:Submit*"
+                "ecs:*"
             ],
             "Resource": "*"
         },
