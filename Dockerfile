@@ -11,7 +11,7 @@ RUN apt-get update \
   && apt-get clean
 
 COPY tools /usr/local/bin
-RUN curl -sL "https://releases.hashicorp.com/terraform/0.9.7/terraform_0.9.7_linux_amd64.zip"> terraform.zip \
+RUN curl -sL "https://releases.hashicorp.com/terraform/0.9.11/terraform_0.9.11_linux_amd64.zip"> terraform.zip \
   && unzip terraform.zip \
   && mv terraform /usr/local/bin
 

@@ -1,0 +1,15 @@
+[Unit]
+Description=/mnt/efs-jenkins
+Requires=network-online.target
+After=network-online.target
+Before=docker.service
+
+[Mount]
+EnvironmentFile=-/etc/environment
+What=${AVAILABILITY_ZONE}.${EFS_ID}.efs.${SERVER_REGION}.amazonaws.com:/
+Where=/mnt/efs-jenkins
+Type=nfs4
+Options=nfsvers\x3d4.1\x2crsize\x3d1048576\x2cwsize\x3d1048576\x2chard\x2ctimeo\x3d600\x2cretrans\x3d2\x200\x200
+
+[Install]
+WantedBy=multi-user.target

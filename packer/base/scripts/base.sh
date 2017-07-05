@@ -37,6 +37,12 @@ apt-get install -y \
         ntp \
         logrotate \
         dhcping \
+        nfs-common \
+        curl \
+        unzip \
+        jq \
         dhcpdump
 
 pip install awscli
+
+echo "AWS_REGION=$(curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone | sed -e 's:\([0-9][0-9]*\)[a-z]*\$:\\1:')" >> /etc/environment
