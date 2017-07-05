@@ -138,6 +138,13 @@ resource "aws_security_group" "cluster" {
     security_groups = ["${split(",", var.security_groups)}"]
   }
 
+  ingress {
+    from_port = 2049
+    to_port   = 2049
+    protocol  = "tcp"
+    self      = true
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
