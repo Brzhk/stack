@@ -80,6 +80,35 @@ resource "aws_instance" "bastion" {
   provisioner "file" {
     source      = "${coalesce(var.private_key_local_path, format("~/.ssh/%s", var.key_name))}"
     destination = "/home/ubuntu/.ssh/key.pem"
+
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = "${file(coalesce(var.private_key_local_path, format("~/.ssh/%s", var.key_name)))}"
+    }
+  }
+
+  provisioner "file" {
+    content     = <<EOF
+Host *
+  IdentityFile ~/.ssh/key.pem
+  User         ubuntu
+
+EOF
+    destination = "/home/ubuntu/.ssh/config"
+
+    connection {
+      type        = "ssh"
+      user        = "ubuntu"
+      private_key = "${file(coalesce(var.private_key_local_path, format("~/.ssh/%s", var.key_name)))}"
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod 600 /home/ubuntu/.ssh/key.pem"
+    ]
+
     connection {
       type        = "ssh"
       user        = "ubuntu"
