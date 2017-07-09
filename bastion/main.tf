@@ -70,7 +70,6 @@ resource "aws_instance" "bastion" {
   key_name               = "${var.key_name}"
   vpc_security_group_ids = ["${split(",",var.security_groups)}"]
   monitoring             = true
-  user_data              = "${file(format("%s/user_data.sh", path.module))}"
 
   tags {
     Name        = "bastion"
