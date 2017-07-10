@@ -1,12 +1,9 @@
 import com.cloudbees.jenkins.plugins.amazonecs.ECSCloud
 import com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate
-import hudson.model.Saveable
+import hudson.plugins.git.GitSCM
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy
 import hudson.security.HudsonPrivateSecurityRealm
 import hudson.security.csrf.DefaultCrumbIssuer
-import hudson.plugins.git.GitSCM
-import hudson.tasks.Maven
-import hudson.util.DescribableList
 import jenkins.CLI
 import jenkins.model.Jenkins
 import jenkins.model.JenkinsLocationConfiguration
@@ -92,7 +89,7 @@ if (!users || users.empty) {
     def cloudName = clusterName
     def cloudClusterArn = "arn:aws:ecs:eu-west-1:" + awsAccountId + ":cluster/" + clusterName
     def tunnel = jenkinsInternalUrl + ":50000"
-    def jenkinsUrl = "http://" + jenkinsInternalUrl + ".local/"
+    def jenkinsUrl = "http://" + jenkinsInternalUrl + "/"
     def emptyCreds = ""
     def regionName = "eu-west-1"
     def slaveTimeoutInSeconds = 900
