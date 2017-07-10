@@ -29,6 +29,10 @@ variable "internal_elb_security_group_id" {
   description = "the internal-elb-sg ID"
 }
 
+variable "external_elb_security_group_id" {
+  description = "the internal-elb-sg ID"
+}
+
 variable "cluster" {
   description = "The cluster name or ARN"
 }
@@ -166,8 +170,7 @@ resource "aws_ecs_service" "main" {
   deployment_maximum_percent         = "${var.deployment_maximum_percent}"
 
   load_balancer {
-
-    elb_name       = "${module.elb.id}"
+    elb_name       = "${module.elb.internal_id}"
     container_name = "${aws_ecs_task_definition.main.family}"
     container_port = "${var.container_http_port}"
   }
@@ -254,6 +257,7 @@ module "elb" {
   ssl_certificate_id             = "${var.ssl_certificate_id}"
   cidr                           = "${var.cidr}"
   internal_elb_security_group_id = "${var.internal_elb_security_group_id}"
+  external_elb_security_group_id= "${var.external_elb_security_group_id}"
   jnlp_port                      = "${var.instance_jnlp_port}"
   vpc_id                         = "${var.vpc_id}"
   elb_jnlp_port                  = "${var.elb_jnlp_port}"
@@ -262,22 +266,22 @@ module "elb" {
 
 // The name of the ELB
 output "name" {
-  value = "${module.elb.name}"
+  value = "${module.elb.internal_name}"
 }
 
 // The DNS name of the ELB
 output "dns" {
-  value = "${module.elb.dns}"
+  value = "${module.elb.internal_dns}"
 }
 
 // The id of the ELB
 output "elb" {
-  value = "${module.elb.id}"
+  value = "${module.elb.internal_id}"
 }
 
 // The zone id of the ELB
 output "zone_id" {
-  value = "${module.elb.zone_id}"
+  value = "${module.elb.internal_zone_id}"
 }
 
 // FQDN built using the zone domain and name (external)
