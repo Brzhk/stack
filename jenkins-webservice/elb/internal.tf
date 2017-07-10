@@ -46,12 +46,13 @@ variable "internal_zone_id" {
   description = "The zone ID to create the record in"
 }
 
+
 /**
  * Resources.
  */
 resource "aws_elb" "internal" {
   name                        = "${var.name}-internal"
-  dns_name                    = "jenkins"
+
   internal                    = true
   cross_zone_load_balancing   = true
   subnets                     = ["${split(",", var.subnet_ids)}"]
@@ -93,58 +94,6 @@ resource "aws_elb" "internal" {
 
   tags {
     Name        = "${var.name}-internal-balancer"
-    Service     = "${var.name}"
-    Environment = "${var.environment}"
-  }
-}
-
-/**
- * Resources.
- */
-resource "aws_elb" "internal" {
-  name                        = "${var.name}-internal"
-
-  internal                    = true
-  cross_zone_load_balancing   = true
-  subnets                     = ["${split(",", var.subnet_ids)}"]
-  security_groups             = [
-    "${var.internal_elb_security_group_id}",
-    "${aws_security_group.internal_jnlp_elb.id}"]
-
-  idle_timeout                = 30
-  connection_draining         = true  // TODO check if connection draining is pertinent
-  connection_draining_timeout = 15
-
-  listener {
-    // provided to the ECS JNLP Slaves as endpoint
-    lb_port           = 80
-    lb_protocol       = "http"
-    instance_port     = "${var.http_port}"
-    instance_protocol = "http"
-  }
-
-  listener {
-    // provided for the JNLP Slaves (also as tunnel)
-    lb_port           = "${var.elb_jnlp_port}"
-    lb_protocol       = "tcp"
-    instance_port     = "${var.jnlp_port}"
-    instance_protocol = "tcp"
-  }
-
-  health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 5
-    target              = "TCP:${var.http_port}"
-    interval            = 30
-  }
-
-  access_logs {
-    bucket = "${var.log_bucket}"
-  }
-
-  tags {
-    Name        = "${var.name}-balancer"
     Service     = "${var.name}"
     Environment = "${var.environment}"
   }
