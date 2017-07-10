@@ -18,7 +18,7 @@ resource "aws_ecr_repository" "jenkins" {
   name = "${format("%s/jenkins", var.image_namespace)}"
 
   provisioner "local-exec" {
-    command = "${format("%s/docker/deploy-image.sh %s %s", path.module, self.repository_url, self.name)}"
+    command = "${format("./docker/deploy-image.sh %s %s", self.repository_url, self.name)}"
   }
 }
 
