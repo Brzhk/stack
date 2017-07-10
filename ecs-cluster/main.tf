@@ -390,6 +390,10 @@ output "name" {
   value = "${var.name}"
 }
 
+output "asg" {
+  value = "${aws_autoscaling_group.main.id}"
+}
+
 // The cluster security group ID.
 output "security_group_id" {
   value = "${aws_security_group.cluster.id}"

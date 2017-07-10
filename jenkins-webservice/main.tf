@@ -37,6 +37,10 @@ variable "cluster" {
   description = "The cluster name or ARN"
 }
 
+variable "cluster_asg" {
+  description = "The cluster ASG id"
+}
+
 variable "log_bucket" {
   description = "The S3 bucket ID to use for the ELB"
 }
@@ -257,13 +261,16 @@ module "elb" {
   ssl_certificate_id             = "${var.ssl_certificate_id}"
   cidr                           = "${var.cidr}"
   internal_elb_security_group_id = "${var.internal_elb_security_group_id}"
-  external_elb_security_group_id= "${var.external_elb_security_group_id}"
+  external_elb_security_group_id = "${var.external_elb_security_group_id}"
   jnlp_port                      = "${var.instance_jnlp_port}"
   vpc_id                         = "${var.vpc_id}"
   elb_jnlp_port                  = "${var.elb_jnlp_port}"
 }
 
-
+resource "aws_autoscaling_attachment" "extattach" {
+  autoscaling_group_name = "${var.cluster_asg}"
+  elb                    = "${module.elb.external_id}"
+}
 // The name of the ELB
 output "name" {
   value = "${module.elb.internal_name}"
