@@ -12,21 +12,34 @@ import jenkins.slaves.JnlpSlaveAgentProtocol4
 
 import java.util.logging.Logger
 
-int defined_slaveport = 50000
-
 def logger = Logger.getLogger("")
 def instance = Jenkins.getInstance()
-def hudsonRealm = new HudsonPrivateSecurityRealm(false)
+
+int defined_slaveport = System.getenv('JENKINS_ADMIN_USERNAME') ?: 50000
+
+def taskTemplateName = "ecs-java"
+def taskLabel = "ecs-java"
+def taskImage = "cloudbees/jnlp-slave-with-java-build-tools"
+def taskRemoteFSRoot = "/home/jenkins"
+def tasklogDriver = "journald"
+def taskCpu = 512
+def taskMemory = 0
+def taskMemoryReservation = 2048
+def privileged = false
+HudsonPrivateSecurityRealm hudsonRealm = new HudsonPrivateSecurityRealm(false)
+FullControlOnceLoggedInAuthorizationStrategy strategy = new FullControlOnceLoggedInAuthorizationStrategy()
+strategy.allowAnonymousRead = false
 def users = hudsonRealm.getAllUsers()
 if (!users || users.empty) {
     println "No Users"
 
     println "--> creating local user 'admin'"
     hudsonRealm.createAccount('brzhk', 'brzhkbrzhk')
+    def adminUsername = System.getenv('JENKINS_ADMIN_USERNAME') ?: 'admin'
+    def adminPassword = System.getenv('JENKINS_ADMIN_PASSWORD') ?: 'password'
+
     println "--> setting full control once logger authorization strategy"
 
-    def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
-    strategy.allowAnonymousRead = false
     instance.setAuthorizationStrategy(strategy)
 
     println "--> disabling CLI remote access"
@@ -59,7 +72,7 @@ if (!users || users.empty) {
     jenkinsLocationConfiguration.save()
 
 
-    GitSCM.DescriptorImpl gitDesc = Jenkins.instance.getExtensionList(GitSCM.DescriptorImpl.class)[0]
+    GitSCM.DescriptorImpl gitDesc = Jenkins.instance.getExtensionList(GitSCM.DescriptorImpl.class).getAt(0)
     gitDesc.globalConfigEmail = "berzehk@gmail.com"
     gitDesc.globalConfigName = "Brzhk"
     gitDesc.createAccountBasedOnEmail = false
@@ -67,20 +80,11 @@ if (!users || users.empty) {
 
     println "--> configuring slave management"
 
-    def taskTemplateName = "ecs-java"
-    def taskLabel = "ecs-java"
-    def taskImage = "cloudbees/jnlp-slave-with-java-build-tools"
-    def taskRemoteFSRoot = "/home/jenkins"
-    def tasklogDriver = "journald"
-    def taskCpu = 512
-    def taskMemory = 0
-    def taskMemoryReservation = 2048
-    def privileged = false
     List<ECSTaskTemplate.LogDriverOption> logDriverOptions = Collections.singletonList(new ECSTaskTemplate.LogDriverOption("tag", taskTemplateName))
     List<ECSTaskTemplate.EnvironmentEntry> environments = Collections.EMPTY_LIST
     List<ECSTaskTemplate.ExtraHostEntry> extraHosts = Collections.EMPTY_LIST
     List<ECSTaskTemplate.MountPointEntry> mountPoints = Collections.EMPTY_LIST
-    ECSTaskTemplate taskTemplate = new ECSTaskTemplate(taskTemplateName, taskLabel, taskImage, taskRemoteFSRoot, taskMemory, taskMemoryReservation, taskCpu, privileged, logDriverOptions, environments, extraHosts, mountPoints);
+    ECSTaskTemplate taskTemplate = new ECSTaskTemplate(taskTemplateName, taskLabel, taskImage, taskRemoteFSRoot, taskMemory, taskMemoryReservation, taskCpu, privileged, logDriverOptions, environments, extraHosts, mountPoints)
     taskTemplate.setLogDriver(tasklogDriver)
 
     def awsAccountId = 759204445141
@@ -94,7 +98,7 @@ if (!users || users.empty) {
     def regionName = "eu-west-1"
     def slaveTimeoutInSeconds = 900
 
-    ECSCloud ecsCloud = new ECSCloud(cloudName, Collections.singletonList(taskTemplate), emptyCreds, cloudClusterArn, regionName, jenkinsUrl, slaveTimeoutInSeconds)
+    ECSCloud ecsCloud = new ECSCloud(cloudName, Collections.<com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate>singletonList(taskTemplate), emptyCreds, cloudClusterArn, regionName, jenkinsUrl, slaveTimeoutInSeconds)
     ecsCloud.tunnel = tunnel
 
     instance.clouds.add(ecsCloud)
