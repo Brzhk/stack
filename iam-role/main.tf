@@ -88,41 +88,6 @@ resource "aws_iam_role_policy" "default_ecs_instance_role_policy" {
 EOF
 }
 
-resource "aws_iam_role_policy" "jenkins_efs_ecs_instance_role_policy" {
-  name   = "jenkins-efs-ecs-instance-role-policy-${var.name}-${var.environment}"
-  role   = "${aws_iam_role.default_ecs_role.id}"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "s3:ListAllMyBuckets",
-      "Resource": "arn:aws:s3:::*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:ListBucket",
-        "s3:GetBucketLocation"
-      ],
-      "Resource": "arn:aws:s3:::EXAMPLE-BUCKET-NAME"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:PutObject",
-        "s3:GetObject",
-        "s3:DeleteObject"
-      ],
-      "Resource": "arn:aws:s3:::EXAMPLE-BUCKET-NAME/*"
-    }
-  ]
-}
-EOF
-}
-
 resource "aws_iam_instance_profile" "default_ecs" {
   name = "ecs-instance-profile-${var.name}-${var.environment}"
   path = "/"

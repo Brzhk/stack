@@ -45,6 +45,10 @@ variable "log_bucket" {
   description = "The S3 bucket ID to use for the ELB"
 }
 
+variable "backup_bucket" {
+  description = "The S3 bucket ID to use for the EFS backup"
+}
+
 variable "ssl_certificate_id" {
   description = "SSL Certificate ID to use"
 }
@@ -265,6 +269,41 @@ module "elb" {
   jnlp_port                      = "${var.instance_jnlp_port}"
   vpc_id                         = "${var.vpc_id}"
   elb_jnlp_port                  = "${var.elb_jnlp_port}"
+}
+
+resource "aws_iam_role_policy" "backup_s3_access_instance_role_policy" {
+  name   = "jenkins-backup-s3-access-instance-role-policy-${var.name}-${var.environment}"
+  role   = "${var.iam_role}"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": "s3:ListAllMyBuckets",
+      "Resource": "arn:aws:s3:::*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "arn:aws:s3:::${var.backup_bucket}"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::${var.backup_bucket}/*"
+    }
+  ]
+}
+EOF
 }
 
 resource "aws_autoscaling_attachment" "extattach" {
