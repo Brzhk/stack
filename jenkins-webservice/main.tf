@@ -272,7 +272,7 @@ module "elb" {
 }
 
 resource "aws_iam_role_policy" "backup_s3_access_instance_role_policy" {
-  name   = "jenkins-backup-s3-access-instance-role-policy-${var.name}-${var.environment}"
+  name   = "jenkins-s3bckp-access-policy-${var.name}-${var.environment}"
   role   = "${var.iam_role}"
 
   policy = <<EOF
