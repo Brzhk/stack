@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<hudson>
+  <disabledAdministrativeMonitors/>
+  <version>${JENKINS_VERSION}</version>
+  <numExecutors>2</numExecutors>
+  <mode>NORMAL</mode>
+  <useSecurity>true</useSecurity>
+  <authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
+    <denyAnonymousReadAccess>true</denyAnonymousReadAccess>
+  </authorizationStrategy>
+  <securityRealm class="hudson.security.HudsonPrivateSecurityRealm">
+    <disableSignup>true</disableSignup>
+    <enableCaptcha>false</enableCaptcha>
+  </securityRealm>
+  <disableRememberMe>false</disableRememberMe>
+  <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$$DefaultProjectNamingStrategy"/>
+  <workspaceDir>$${JENKINS_HOME}/workspace/$${ITEM_FULLNAME}</workspaceDir>
+  <buildsDir>$${ITEM_ROOTDIR}/builds</buildsDir>
+  <markupFormatter class="hudson.markup.EscapedMarkupFormatter"/>
+  <jdks/>
+  <viewsTabBar class="hudson.views.DefaultViewsTabBar"/>
+  <myViewsTabBar class="hudson.views.DefaultMyViewsTabBar"/>
+  <clouds>
+    <com.cloudbees.jenkins.plugins.amazonecs.ECSCloud plugin="amazon-ecs@1.11">
+      <name>forge</name>
+      <templates>
+        <com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate>
+          <templateName>java-jnlp-slave</templateName>
+          <label>java-jnlp-slave</label>
+          <image>cloudbees/jnlp-slave-with-java-build-tools</image>
+          <remoteFSRoot>/home/jenkins</remoteFSRoot>
+          <memory>0</memory>
+          <memoryReservation>2048</memoryReservation>
+          <cpu>512</cpu>
+          <privileged>false</privileged>
+          <logDriver>journald</logDriver>
+          <logDriverOptions>
+            <com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate_-LogDriverOption>
+              <name>tag</name>
+              <value>java-jnlp-slave</value>
+            </com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate_-LogDriverOption>
+          </logDriverOptions>
+        </com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate>
+        <com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate>
+          <templateName>dind-jnlp-slave</templateName>
+          <label>dind-jnlp-slave</label>
+          <image>brzhk/jenkins-dind-jnlp-slave</image>
+          <remoteFSRoot>/home/jenkins</remoteFSRoot>
+          <memory>0</memory>
+          <memoryReservation>2048</memoryReservation>
+          <cpu>512</cpu>
+          <mountPoints>
+            <com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate_-MountPointEntry>
+              <name>varlibdocker</name>
+              <sourcePath></sourcePath>
+              <containerPath>/var/lib/docker</containerPath>
+              <readOnly>false</readOnly>
+            </com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate_-MountPointEntry>
+          </mountPoints>
+          <privileged>true</privileged>
+          <logDriver>journald</logDriver>
+          <logDriverOptions>
+            <com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate_-LogDriverOption>
+              <name>tag</name>
+              <value>dind-jnlp-slave</value>
+            </com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate_-LogDriverOption>
+          </logDriverOptions>
+        </com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate>
+      </templates>
+      <credentialsId></credentialsId>
+      <cluster>arn:aws:ecs:eu-west-1:759204445141:cluster/forge</cluster>
+      <regionName>eu-west-1</regionName>
+      <tunnel>jenkins.stack.local:50000</tunnel>
+      <jenkinsUrl>http://jenkins.stack.local/</jenkinsUrl>
+      <slaveTimoutInSeconds>900</slaveTimoutInSeconds>
+    </com.cloudbees.jenkins.plugins.amazonecs.ECSCloud>
+  </clouds>
+  <quietPeriod>5</quietPeriod>
+  <scmCheckoutRetryCount>2</scmCheckoutRetryCount>
+  <views>
+    <hudson.model.AllView>
+      <owner class="hudson" reference="../../.."/>
+      <name>all</name>
+      <filterExecutors>false</filterExecutors>
+      <filterQueue>false</filterQueue>
+      <properties class="hudson.model.View$$PropertyList"/>
+    </hudson.model.AllView>
+  </views>
+  <primaryView>all</primaryView>
+  <slaveAgentPort>50000</slaveAgentPort>
+  <disabledAgentProtocols>
+    <string>JNLP-connect</string>
+    <string>JNLP2-connect</string>
+    <string>JNLP3-connect</string>
+  </disabledAgentProtocols>
+  <label></label>
+  <crumbIssuer class="hudson.security.csrf.DefaultCrumbIssuer">
+    <excludeClientIPFromCrumb>true</excludeClientIPFromCrumb>
+  </crumbIssuer>
+  <nodeProperties/>
+  <globalNodeProperties>
+    <hudson.tools.ToolLocationNodeProperty>
+      <locations>
+        <hudson.tools.ToolLocationNodeProperty_-ToolLocation>
+          <type>hudson.plugins.git.GitTool$$DescriptorImpl</type>
+          <name>Default</name>
+          <home>/usr/bin/git</home>
+        </hudson.tools.ToolLocationNodeProperty_-ToolLocation>
+      </locations>
+    </hudson.tools.ToolLocationNodeProperty>
+    <hudson.slaves.EnvironmentVariablesNodeProperty>
+      <envVars serialization="custom">
+        <unserializable-parents/>
+        <tree-map>
+          <default>
+            <comparator class="hudson.util.CaseInsensitiveComparator"/>
+          </default>
+          <int>0</int>
+        </tree-map>
+      </envVars>
+    </hudson.slaves.EnvironmentVariablesNodeProperty>
+  </globalNodeProperties>
+</hudson>

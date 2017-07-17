@@ -15,31 +15,20 @@ import java.util.logging.Logger
 def logger = Logger.getLogger("")
 def instance = Jenkins.getInstance()
 
-int defined_slaveport = System.getenv('JENKINS_ADMIN_USERNAME') ?: 50000
 
-def taskTemplateName = "ecs-java"
-def taskLabel = "ecs-java"
-def taskImage = "cloudbees/jnlp-slave-with-java-build-tools"
-def taskRemoteFSRoot = "/home/jenkins"
-def tasklogDriver = "journald"
-def taskCpu = 512
-def taskMemory = 0
-def taskMemoryReservation = 2048
-def privileged = false
 HudsonPrivateSecurityRealm hudsonRealm = new HudsonPrivateSecurityRealm(false)
-FullControlOnceLoggedInAuthorizationStrategy strategy = new FullControlOnceLoggedInAuthorizationStrategy()
-strategy.allowAnonymousRead = false
+
 def users = hudsonRealm.getAllUsers()
 if (!users || users.empty) {
-    println "No Users"
 
     println "--> creating local user 'admin'"
-    hudsonRealm.createAccount('brzhk', 'brzhkbrzhk')
-    def adminUsername = System.getenv('JENKINS_ADMIN_USERNAME') ?: 'admin'
-    def adminPassword = System.getenv('JENKINS_ADMIN_PASSWORD') ?: 'password'
+    def adminUsername = System.getenv('JENKINS_ADMIN_USERNAME') ?: 'brzhk'
+    def adminPassword = System.getenv('JENKINS_ADMIN_PASSWORD') ?: 'brzhkbrzhk'
+    hudsonRealm.createAccount(adminUsername, adminPassword)
+
 
     println "--> setting full control once logger authorization strategy"
-
+    FullControlOnceLoggedInAuthorizationStrategy strategy = new FullControlOnceLoggedInAuthorizationStrategy()
     instance.setAuthorizationStrategy(strategy)
 
     println "--> disabling CLI remote access"

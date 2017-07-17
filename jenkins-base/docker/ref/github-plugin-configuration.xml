@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<github-plugin-configuration plugin="github@1.27.0">
+  <configs>
+    <github-server-config>
+      <apiUrl>https://api.github.com</apiUrl>
+      <manageHooks>true</manageHooks>
+      <credentialsId>66cab201-cafe-babe-cafe-fea40dd7add2</credentialsId>
+      <clientCacheSize>128</clientCacheSize>
+    </github-server-config>
+  </configs>
+  <hookSecretConfig>
+    <credentialsId>026b21b6-cafe-babe-cafe-57ff46f64e1a</credentialsId>
+  </hookSecretConfig>
+</github-plugin-configuration>

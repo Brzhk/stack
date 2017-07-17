@@ -2,6 +2,11 @@ variable "image_namespace" {
   description = "A namespace for your custom jenkins image"
 }
 
+variable "base_image_version" {
+  description = "the base jenkins docker image"
+  default     = "2.60.1"
+}
+
 data "aws_caller_identity" "account" {
 }
 
