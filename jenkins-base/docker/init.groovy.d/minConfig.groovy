@@ -56,7 +56,7 @@ def slaveTimeoutInSeconds = 900
 final String ADMIN_USERNAME = 'Brzhk'
 Jenkins instance = Jenkins.getInstance()
 final FilePath ADMIN_PASSWORD_FILE = instance.getRootPath().child('secrets/initialAdminPassword')
-SecurityRealm securityRealm = instance.getSecurityRealm() ? instance.getSecurityRealm() : new SecurityRealm.None()
+SecurityRealm securityRealm = instance.getSecurityRealm() ? instance.getSecurityRealm() : SecurityRealm.NO_AUTHENTICATION
 
 if(securityRealm instanceof SecurityRealm.None ||
         (securityRealm instanceof HudsonPrivateSecurityRealm
