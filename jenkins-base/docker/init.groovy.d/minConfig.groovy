@@ -1,5 +1,6 @@
 import com.cloudbees.jenkins.plugins.amazonecs.ECSCloud
 import com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate
+import hudson.model.Node
 import hudson.plugins.git.GitSCM
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy
 import hudson.security.HudsonPrivateSecurityRealm
@@ -85,6 +86,10 @@ if (!users || users.empty) {
     jenkinsLocationConfiguration.setUrl("https://jenkins.brzhk.wtf/")
     jenkinsLocationConfiguration.save()
 
+    instance.setLabelString("master")
+    instance.setMode(Node.Mode.EXCLUSIVE)
+    instance.setScmCheckoutRetryCount(2)
+    instance.setSystemMessage("-- Press START --")
 
     GitSCM.DescriptorImpl gitDesc = Jenkins.instance.getExtensionList(GitSCM.DescriptorImpl.class)[0]
     gitDesc.globalConfigEmail = "berzehk@gmail.com"
