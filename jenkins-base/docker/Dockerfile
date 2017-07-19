@@ -19,4 +19,4 @@ RUN sudo -H pip install --upgrade virtualenv
 
 RUN /usr/local/bin/install-plugins.sh git amazon-ecs amazon-ecr github-oauth github-branch-source workflow-aggregator docker-workflow blueocean
 
-COPY init.groovy.d/*.groovy /usr/share/jenkins/ref/init.groovy.d/
+COPY init.groovy.d/minConfig.groovy /usr/share/jenkins/ref/init.groovy.d/
