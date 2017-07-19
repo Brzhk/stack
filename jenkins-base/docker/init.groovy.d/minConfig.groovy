@@ -58,13 +58,13 @@ Jenkins instance = Jenkins.getInstance()
 final FilePath ADMIN_PASSWORD_FILE = instance.getRootPath().child('secrets/initialAdminPassword')
 SecurityRealm securityRealm = instance.getSecurityRealm() ? instance.getSecurityRealm() : SecurityRealm.NO_AUTHENTICATION
 
-if(securityRealm == SecurityRealm.NO_AUTHENTICATION) {
+if (securityRealm == SecurityRealm.NO_AUTHENTICATION) {
 
     HudsonPrivateSecurityRealm defaultSecurityRealm = new HudsonPrivateSecurityRealm(false)
 
     logger.info "--> creating ${ADMIN_USERNAME} local user"
     String generatedPassword = UUID.randomUUID().toString().replace('-', '').toLowerCase(Locale.ENGLISH)
-    new BulkChange(instance).withClosable {
+    BulkChange bc = new BulkChange(instance); try {
 
         defaultSecurityRealm.createAccount(ADMIN_USERNAME, generatedPassword)
 //        User admin = defaultSecurityRealm.createAccount(ADMIN_USERNAME, generatedPassword)
@@ -139,7 +139,7 @@ if(securityRealm == SecurityRealm.NO_AUTHENTICATION) {
         ecsCloud.tunnel = tunnel
         instance.clouds.add(ecsCloud)
 
-        it.commit()
+        bc.commit()
 
         if (ADMIN_PASSWORD_FILE.exists()) {
             String setupKey = ADMIN_PASSWORD_FILE.readToString().trim()
@@ -160,6 +160,8 @@ if(securityRealm == SecurityRealm.NO_AUTHENTICATION) {
                 *************************************************************
                 *************************************************************""")
         }
+    } finally {
+        bc.abort()
     }
 } else
     logger.info "Admin found"
