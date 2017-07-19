@@ -17,8 +17,7 @@ RUN sudo -H pip install --upgrade awscli
 RUN sudo -H pip install --upgrade boto3
 RUN sudo -H pip install --upgrade virtualenv
 
-COPY init.groovy.d//*.groovy /usr/share/jenkins/ref/init.groovy.d/
+COPY init.groovy.d/*.groovy /usr/share/jenkins/ref/init.groovy.d/
 
 
-RUN /usr/local/bin/install-plugins.sh git amazon-ecs amazon-ecr github-oauth github-branch-source blueocean
-
+RUN /usr/local/bin/install-plugins.sh git amazon-ecs amazon-ecr github-oauth github-branch-source workflow-aggregator docker-workflow blueocean

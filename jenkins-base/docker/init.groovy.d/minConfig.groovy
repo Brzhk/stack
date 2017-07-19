@@ -8,60 +8,76 @@ import jenkins.CLI
 import jenkins.model.Jenkins
 import jenkins.model.JenkinsLocationConfiguration
 import jenkins.security.s2m.AdminWhitelistRule
-import jenkins.slaves.JnlpSlaveAgentProtocol4
+import org.jenkinsci.plugins.docker.commons.credentials.DockerRegistryEndpoint
+import org.jenkinsci.plugins.pipeline.modeldefinition.config.GlobalConfig
+import org.testng.collections.Lists
 
 import java.util.logging.Logger
 
 def logger = Logger.getLogger("")
 def instance = Jenkins.getInstance()
 
-int defined_slaveport = System.getenv('JENKINS_ADMIN_USERNAME') ?: 50000
+int defined_slaveport = 50000
 
-def taskTemplateName = "ecs-java"
-def taskLabel = "ecs-java"
-def taskImage = "cloudbees/jnlp-slave-with-java-build-tools"
+def taskTemplateName = "java"
+def taskLabel = "java"
+def taskImage = "cloudbees/jnlp-slave-with-java-build-tools:latest"
 def taskRemoteFSRoot = "/home/jenkins"
 def tasklogDriver = "journald"
 def taskCpu = 512
 def taskMemory = 0
 def taskMemoryReservation = 2048
 def privileged = false
+
+def dindTaskTemplateName = "dind"
+def dindTaskLabel = "dind"
+def dindTaskImage = "brzhk/jenkins-dind-jnlp-slave"
+def dindTaskRemoteFSRoot = "/home/jenkins"
+def dindTasklogDriver = "journald"
+def dindTaskCpu = 512
+def dindTaskMemory = 0
+def dindTaskMemoryReservation = 2048
+def dindPrivileged = true
+
+def awsAccountId = 759204445141
+def clusterName = "forge"
+def jenkinsInternalUrl = "jenkins.stack.local"
+def cloudName = clusterName
+def cloudClusterArn = "arn:aws:ecs:eu-west-1:" + awsAccountId + ":cluster/" + clusterName
+def tunnel = "${jenkinsInternalUrl}:${defined_slaveport}"
+def jenkinsUrl = "http://" + jenkinsInternalUrl + "/"
+def emptyCreds = ""
+def regionName = "eu-west-1"
+def slaveTimeoutInSeconds = 900
+
 HudsonPrivateSecurityRealm hudsonRealm = new HudsonPrivateSecurityRealm(false)
 FullControlOnceLoggedInAuthorizationStrategy strategy = new FullControlOnceLoggedInAuthorizationStrategy()
 strategy.allowAnonymousRead = false
 def users = hudsonRealm.getAllUsers()
 if (!users || users.empty) {
-    println "No Users"
+    logger.info "No Users"
 
-    println "--> creating local user 'admin'"
-    hudsonRealm.createAccount('brzhk', 'brzhkbrzhk')
-    def adminUsername = System.getenv('JENKINS_ADMIN_USERNAME') ?: 'admin'
-    def adminPassword = System.getenv('JENKINS_ADMIN_PASSWORD') ?: 'password'
+    logger.info"--> creating local user 'Brzhk'"
+    hudsonRealm.createAccount('Brzhk', 'brzhkbrzhk')
 
-    println "--> setting full control once logger authorization strategy"
+    logger.info "--> setting full control once logger authorization strategy"
 
     instance.setAuthorizationStrategy(strategy)
 
-    println "--> disabling CLI remote access"
+    logger.info "--> disabling CLI remote access"
     CLI.get().setEnabled(false)
 
-    println "--> creating crumb issuer"
+    logger.info "--> creating crumb issuer"
     DefaultCrumbIssuer defaultCrumbIssuer = new DefaultCrumbIssuer(true)
     instance.crumbIssuer = defaultCrumbIssuer
     instance.setSecurityRealm(hudsonRealm)
 
-    println "--> enabling slave access control mechanism"
+    logger.info "--> enabling slave access control mechanism"
     instance.getInjector().getInstance(AdminWhitelistRule.class)
             .setMasterKillSwitch(false)
 
-    def current_slaveport = instance.getSlaveAgentPort()
-
-    if (current_slaveport != defined_slaveport) {
-        println "--> setting slave port"
-        instance.setSlaveAgentPort(defined_slaveport)
-        logger.info("Slaveport set to " + defined_slaveport)
-    }
-
+    logger.info "--> setting slave port"
+    instance.setSlaveAgentPort(defined_slaveport)
 
     def jenkinsLocationConfiguration = JenkinsLocationConfiguration.get()
 
@@ -70,14 +86,18 @@ if (!users || users.empty) {
     jenkinsLocationConfiguration.save()
 
 
-    GitSCM.DescriptorImpl gitDesc = Jenkins.instance.getExtensionList(GitSCM.DescriptorImpl.class).getAt(0)
+    GitSCM.DescriptorImpl gitDesc = Jenkins.instance.getExtensionList(GitSCM.DescriptorImpl.class)[0]
     gitDesc.globalConfigEmail = "berzehk@gmail.com"
     gitDesc.globalConfigName = "Brzhk"
     gitDesc.createAccountBasedOnEmail = false
     gitDesc.save()
 
-    println "--> configuring slave management"
+    GlobalConfig pipelineCfg = GlobalConfig.get()
+    pipelineCfg.dockerLabel = dindTaskLabel
+    pipelineCfg.setRegistry(new DockerRegistryEndpoint(null, null))
+    pipelineCfg.save()
 
+    logger.info "--> configuring java slave agent"
     List<ECSTaskTemplate.LogDriverOption> logDriverOptions = Collections.singletonList(new ECSTaskTemplate.LogDriverOption("tag", taskTemplateName))
     List<ECSTaskTemplate.EnvironmentEntry> environments = Collections.EMPTY_LIST
     List<ECSTaskTemplate.ExtraHostEntry> extraHosts = Collections.EMPTY_LIST
@@ -85,23 +105,20 @@ if (!users || users.empty) {
     ECSTaskTemplate taskTemplate = new ECSTaskTemplate(taskTemplateName, taskLabel, taskImage, taskRemoteFSRoot, taskMemory, taskMemoryReservation, taskCpu, privileged, logDriverOptions, environments, extraHosts, mountPoints)
     taskTemplate.setLogDriver(tasklogDriver)
 
-    def awsAccountId = 759204445141
-    def clusterName = "forge"
-    def jenkinsInternalUrl = "jenkins.stack.local"
-    def cloudName = clusterName
-    def cloudClusterArn = "arn:aws:ecs:eu-west-1:" + awsAccountId + ":cluster/" + clusterName
-    def tunnel = jenkinsInternalUrl + ":50000"
-    def jenkinsUrl = "http://" + jenkinsInternalUrl + "/"
-    def emptyCreds = ""
-    def regionName = "eu-west-1"
-    def slaveTimeoutInSeconds = 900
+    logger.info "--> configuring dind slave agent"
+    List<ECSTaskTemplate.LogDriverOption> dindLogDriverOptions = Collections.singletonList(new ECSTaskTemplate.LogDriverOption("tag", taskTemplateName))
+    List<ECSTaskTemplate.EnvironmentEntry> dindEnvironments = Collections.EMPTY_LIST
+    List<ECSTaskTemplate.ExtraHostEntry> dindExtraHosts = Collections.EMPTY_LIST
+    List<ECSTaskTemplate.MountPointEntry> dindMountPoints = Collections.singletonList(new ECSTaskTemplate.MountPointEntry('varlibdocker','','/var/lib/docker', false))
+    ECSTaskTemplate dindTaskTemplate = new ECSTaskTemplate(dindTaskTemplateName, dindTaskLabel, dindTaskImage, dindTaskRemoteFSRoot, dindTaskMemory, dindTaskMemoryReservation, dindTaskCpu, dindPrivileged, dindLogDriverOptions, dindEnvironments, dindExtraHosts, dindMountPoints)
+    dindTaskTemplate.setLogDriver(dindTasklogDriver)
 
-    ECSCloud ecsCloud = new ECSCloud(cloudName, Collections.<com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate>singletonList(taskTemplate), emptyCreds, cloudClusterArn, regionName, jenkinsUrl, slaveTimeoutInSeconds)
+
+    ECSCloud ecsCloud = new ECSCloud(cloudName, Lists.newArrayList(taskTemplate, dindTaskTemplate), emptyCreds, cloudClusterArn, regionName, jenkinsUrl, slaveTimeoutInSeconds)
     ecsCloud.tunnel = tunnel
-
     instance.clouds.add(ecsCloud)
 
-} else
-    println "Admin found"
 
-instance.save()
+    instance.save()
+} else
+    logger.info "Admin found"
