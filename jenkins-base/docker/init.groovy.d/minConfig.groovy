@@ -1,5 +1,6 @@
 import com.cloudbees.jenkins.plugins.amazonecs.ECSCloud
 import com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils
 import hudson.BulkChange
 import hudson.FilePath
 import hudson.model.Node
@@ -14,7 +15,6 @@ import jenkins.model.JenkinsLocationConfiguration
 import jenkins.security.s2m.AdminWhitelistRule
 import org.jenkinsci.plugins.docker.commons.credentials.DockerRegistryEndpoint
 import org.jenkinsci.plugins.pipeline.modeldefinition.config.GlobalConfig
-import org.testng.collections.Lists
 
 import java.util.logging.Logger
 
@@ -138,7 +138,7 @@ if (securityRealm instanceof HudsonPrivateSecurityRealm
         dindTaskTemplate.setLogDriver(dindTasklogDriver)
 
 
-        ECSCloud ecsCloud = new ECSCloud(cloudName, Lists.newArrayList(taskTemplate, dindTaskTemplate), emptyCreds, cloudClusterArn, regionName, jenkinsUrl, slaveTimeoutInSeconds)
+        ECSCloud ecsCloud = new ECSCloud(cloudName, Arrays.asList(taskTemplate, dindTaskTemplate), emptyCreds, cloudClusterArn, regionName, jenkinsUrl, slaveTimeoutInSeconds)
         ecsCloud.tunnel = tunnel
         instance.clouds.add(ecsCloud)
 
