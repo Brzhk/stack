@@ -1,6 +1,5 @@
 import com.cloudbees.jenkins.plugins.amazonecs.ECSCloud
 import com.cloudbees.jenkins.plugins.amazonecs.ECSTaskTemplate
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils
 import hudson.BulkChange
 import hudson.FilePath
 import hudson.model.Node
