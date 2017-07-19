@@ -58,9 +58,7 @@ Jenkins instance = Jenkins.getInstance()
 final FilePath ADMIN_PASSWORD_FILE = instance.getRootPath().child('secrets/initialAdminPassword')
 SecurityRealm securityRealm = instance.getSecurityRealm() ? instance.getSecurityRealm() : SecurityRealm.NO_AUTHENTICATION
 
-if(securityRealm instanceof SecurityRealm.None ||
-        (securityRealm instanceof HudsonPrivateSecurityRealm
-                && securityRealm.getAllUsers().isEmpty())) {
+if(securityRealm == SecurityRealm.NO_AUTHENTICATION) {
 
     HudsonPrivateSecurityRealm defaultSecurityRealm = new HudsonPrivateSecurityRealm(false)
 
