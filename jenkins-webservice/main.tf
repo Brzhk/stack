@@ -59,7 +59,7 @@ variable "iam_role" {
 
 variable "image" {
   description = "The docker image name, e.g jenkins"
-  default     = "jenkins"
+  default     = "jenkins:latest"
 }
 
 variable "name" {
