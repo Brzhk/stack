@@ -56,13 +56,13 @@ def slaveTimeoutInSeconds = 900
 final String ADMIN_USERNAME = 'Brzhk'
 Jenkins instance = Jenkins.getInstance()
 final FilePath ADMIN_PASSWORD_FILE = instance.getRootPath().child('secrets/initialAdminPassword')
-SecurityRealm securityRealm = instance.getSecurityRealm() ? instance.getSecurityRealm() : new HudsonPrivateSecurityRealm(false)
+SecurityRealm securityRealm = instance.getSecurityRealm() ? instance.getSecurityRealm() : new SecurityRealm.None()
 
+if(securityRealm instanceof SecurityRealm.None ||
+        (securityRealm instanceof HudsonPrivateSecurityRealm
+                && securityRealm.getAllUsers().isEmpty())) {
 
-if (securityRealm instanceof HudsonPrivateSecurityRealm
-        && securityRealm.getAllUsers().isEmpty()) {
-
-    HudsonPrivateSecurityRealm defaultSecurityRealm = securityRealm
+    HudsonPrivateSecurityRealm defaultSecurityRealm = new HudsonPrivateSecurityRealm(false)
 
     logger.info "--> creating ${ADMIN_USERNAME} local user"
     String generatedPassword = UUID.randomUUID().toString().replace('-', '').toLowerCase(Locale.ENGLISH)
