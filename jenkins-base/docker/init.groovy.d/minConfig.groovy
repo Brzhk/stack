@@ -60,8 +60,6 @@ if (!users || users.empty) {
         println "--> setting slave port"
         instance.setSlaveAgentPort(defined_slaveport)
         logger.info("Slaveport set to " + defined_slaveport)
-
-        instance.setAgentProtocols(Collections.singleton(JnlpSlaveAgentProtocol4.name))
     }
 
 
