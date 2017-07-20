@@ -42,6 +42,7 @@ resource "aws_ecr_repository" "jenkins" {
 
   provisioner "local-exec" {
     command = <<EOC
+mkdir -p "${path.module}/docker/init.groovy.d"
 cat <<EOF >${path.module}/docker/init.groovy.d/minConfig.groovy
 ${data.template_file.container_cfg_script.rendered}
 EOF
