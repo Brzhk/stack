@@ -141,9 +141,9 @@ if (securityRealm == SecurityRealm.NO_AUTHENTICATION) {
                 created and a password generated. Please use the following 
                 password to proceed to installation:
                     
-                    \\$${setupKey}
+                    \$${setupKey}
                     
-                This may also be found at: \\$${ADMIN_PASSWORD_FILE.getRemote()}
+                This may also be found at: \$${ADMIN_PASSWORD_FILE.getRemote()}
                     
                 *************************************************************
                 *************************************************************
