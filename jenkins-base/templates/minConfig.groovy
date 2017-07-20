@@ -19,7 +19,6 @@ import java.util.logging.Logger
 
 def logger = Logger.getLogger("")
 
-int defined_slaveport = 50000
 
 def taskTemplateName = "java"
 def taskLabel = "java"
@@ -41,19 +40,9 @@ def dindTaskMemory = 0
 def dindTaskMemoryReservation = 2048
 def dindPrivileged = true
 
-def awsAccountId = 759204445141
-def clusterName = "forge"
-def jenkinsInternalUrl = "jenkins.stack.local"
-def cloudName = clusterName
-def cloudClusterArn = "arn:aws:ecs:eu-west-1:" + awsAccountId + ":cluster/" + clusterName
-def tunnel = "${jenkinsInternalUrl}:${defined_slaveport}"
-def jenkinsUrl = "http://" + jenkinsInternalUrl + "/"
-def emptyCreds = ""
-def regionName = "eu-west-1"
 def slaveTimeoutInSeconds = 900
 
 
-final String ADMIN_USERNAME = 'Brzhk'
 Jenkins instance = Jenkins.getInstance()
 final FilePath ADMIN_PASSWORD_FILE = instance.getRootPath().child('secrets/initialAdminPassword')
 SecurityRealm securityRealm = instance.getSecurityRealm() ? instance.getSecurityRealm() : SecurityRealm.NO_AUTHENTICATION
@@ -66,8 +55,8 @@ if (securityRealm == SecurityRealm.NO_AUTHENTICATION) {
     String generatedPassword = UUID.randomUUID().toString().replace('-', '').toLowerCase(Locale.ENGLISH)
     BulkChange bc = new BulkChange(instance); try {
 
-        defaultSecurityRealm.createAccount(ADMIN_USERNAME, generatedPassword)
-//        User admin = defaultSecurityRealm.createAccount(ADMIN_USERNAME, generatedPassword)
+        defaultSecurityRealm.createAccount("${ADMIN_USERNAME}", generatedPassword)
+//        User admin = defaultSecurityRealm.createAccount("${ADMIN_USERNAME}", generatedPassword)
 //        assert ExtensionList.lookup(PermissionAdder.class).any {
 //            it.add(instance.getAuthorizationStrategy(), admin, Jenkins.ADMINISTER)
 //        }: "Cannot give the ADMINISTER authority to the ${ADMIN_USERNAME} user"
@@ -94,12 +83,12 @@ if (securityRealm == SecurityRealm.NO_AUTHENTICATION) {
                 .setMasterKillSwitch(false)
 
         logger.info "--> setting slave port"
-        instance.setSlaveAgentPort(defined_slaveport)
+        instance.setSlaveAgentPort(${CONTAINER_JNLP_PORT})
 
         def jenkinsLocationConfiguration = JenkinsLocationConfiguration.get()
 
-        jenkinsLocationConfiguration.setAdminAddress("Brzhk <berzehk@gmail.com>")
-        jenkinsLocationConfiguration.setUrl("https://jenkins.brzhk.wtf/")
+        jenkinsLocationConfiguration.setAdminAddress("${ADMIN_USERNAME} <${ADMIN_EMAIL_ADDRESS}>")
+        jenkinsLocationConfiguration.setUrl("https://${EXTERNAL_FQDN}/")
         jenkinsLocationConfiguration.save()
 
         instance.setLabelString("master")
@@ -108,8 +97,8 @@ if (securityRealm == SecurityRealm.NO_AUTHENTICATION) {
         instance.setSystemMessage("-- Press START --")
 
         GitSCM.DescriptorImpl gitDesc = Jenkins.instance.getExtensionList(GitSCM.DescriptorImpl.class)[0]
-        gitDesc.globalConfigEmail = "berzehk@gmail.com"
-        gitDesc.globalConfigName = "Brzhk"
+        gitDesc.globalConfigEmail = "${ADMIN_EMAIL_ADDRESS}"
+        gitDesc.globalConfigName = "${ADMIN_USERNAME}"
         gitDesc.createAccountBasedOnEmail = false
         gitDesc.save()
 
@@ -135,8 +124,8 @@ if (securityRealm == SecurityRealm.NO_AUTHENTICATION) {
         dindTaskTemplate.setLogDriver(dindTasklogDriver)
 
 
-        ECSCloud ecsCloud = new ECSCloud(cloudName, Arrays.asList(taskTemplate, dindTaskTemplate), emptyCreds, cloudClusterArn, regionName, jenkinsUrl, slaveTimeoutInSeconds)
-        ecsCloud.tunnel = tunnel
+        ECSCloud ecsCloud = new ECSCloud("${CLUSTER_NAME}", Arrays.asList(taskTemplate, dindTaskTemplate), "", "arn:aws:ecs:${AWS_REGION}:${AWS_ACCOUNT_ID}:cluster/${CLUSTER_NAME}", "${AWS_REGION}", "http://${INTERNAL_FQDN}/", slaveTimeoutInSeconds)
+        ecsCloud.tunnel = "${INTERNAL_FQDN}:${CONTAINER_JNLP_PORT}"
         instance.clouds.add(ecsCloud)
 
         bc.commit()
@@ -152,9 +141,9 @@ if (securityRealm == SecurityRealm.NO_AUTHENTICATION) {
                 created and a password generated. Please use the following 
                 password to proceed to installation:
                     
-                    ${setupKey} 
+                    $${setupKey} 
                     
-                This may also be found at: ${ADMIN_PASSWORD_FILE.getRemote()}
+                This may also be found at: $${ADMIN_PASSWORD_FILE.getRemote()}
                     
                 *************************************************************
                 *************************************************************
