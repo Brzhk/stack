@@ -60,7 +60,7 @@ data "template_file" "container_cfg_script" {
 
   vars {
     ADMIN_USERNAME      = "${var.admin_username}"
-    ADMIN_EMAIL_ADDRESS = "${coalesce(var.admin_email_address, format("no-reply@%s", data.terraform_remote_state.groundwork.public_domain_name))}"
+    ADMIN_EMAIL_ADDRESS = "${coalesce(var.admin_email_address, format("no-reply@%s", var.public_domain_name))}"
     CONTAINER_JNLP_PORT = "${var.container_jnlp_port}"
     EXTERNAL_FQDN       = "jenkins.${var.public_domain_name}"
     INTERNAL_FQDN       = "jenkins.${var.domain_name}"
